@@ -16,9 +16,6 @@
         }
     ],
     
-    "rewrites": [
-        { "source": "/(.*)", "destination": "api/index.py" }
-    ],
     "headers": [
         {
           "source": "/(.*)",

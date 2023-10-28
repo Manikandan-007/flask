@@ -12,7 +12,7 @@ CORS(app)
 # SQL Operations
 import sqlite3
 import pandas as pd
-from IPython.display import display
+
 
 connection = sqlite3.connect("securitysurveillance.db")
 

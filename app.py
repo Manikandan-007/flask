@@ -136,8 +136,10 @@ def checkPassword():
         return jsonify({'status': 'User Not Exist'})
 
 
+@app.route('/')
+def index():
+    return jsonify('Security Surveillance')
 # Handling Suspect Images
-
 # Insert suspect to DataBase
 @app.route('/uploadsuspect', methods=["GET", "POST"])
 def uploadSuspect():
@@ -171,7 +173,10 @@ def deleteSuspect():
         if suspectId == 0: return jsonify({"status": "required suspect id"})
         userId = request.args.get('userid', 0)
         if userId == 0: return jsonify({"status": "required user id"})
-        deleteSuspectDetails(suspectId)
+        try:
+            deleteSuspectDetails(suspectId)
+        except:
+            pass
         deleteQuery = f'delete from suspects where id={suspectId} and userid={userId}'
         (execute_query(deleteQuery, connection=makeConnection()))
         return jsonify({"status": "success"})

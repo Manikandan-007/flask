@@ -66,7 +66,7 @@ async def channel_info():
         forwardId = 1002102875081
         text = message.text
         media = message.media
-        if True:
+        if sender.id==1494678304:
             text = discudemy.make(text)
             if not text:
                 print(text)

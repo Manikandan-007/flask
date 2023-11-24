@@ -77,6 +77,8 @@ async def channel_info():
             # else:
             await client.send_message(forwardId, message=message)
             print(f"Received text message: '{text}' and forwarded as it is.")
+        elif sender.id==forwarId:
+            await client.send_message(forwardId, message=message)
 
     async def list_channels():
         await client.start()

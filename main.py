@@ -33,13 +33,13 @@ class discudemy:
         if message in discudemy.completed:
             return False
         else:
-            print('List=',*discudemy.completed,sep='\n')
             return True
 
     @staticmethod
     def make(message):
         try:
             discLink = Find(message)[0]
+            print(discudemy.completed)
             if discudemy.checkAvailable(discLink):
                 link = discudemy.firstPagediskUdemy(discLink)
                 if link:

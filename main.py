@@ -28,7 +28,7 @@ class discudemy:
 
     @staticmethod
     def checkAvailable(message:str):
-        message =message.split('\n')[3][3:]
+        # message =message.split('\n')[3][3:]
         print(message)
         if message in discudemy.completed:
             return False
@@ -38,10 +38,13 @@ class discudemy:
     @staticmethod
     def make(message):
         try:
-            if discudemy.checkAvailable(message):
-                link = discudemy.firstPagediskUdemy(Find(message)[0])
+            discLink = Find(message)[0]
+            if discudemy.checkAvailable(discLink):
+                link = discudemy.firstPagediskUdemy(discLink)
                 if link:
-                    discudemy.completed.append(message.split('\n')[3][3:])
+                    discudemy.completed.append(discLink)
+                else:
+                    print(discLink,'Expired!')
                 return link
             else:
                 return False
@@ -71,10 +74,6 @@ async def channel_info():
             if not text:
                 print(text)
                 return False
-            # if media:
-            #     await client.send_message(forwardId,message=text,file=media)
-            #     print("Media attached. Forwarded with modified caption.")
-            # else:
             await client.send_message(forwardId, message=text)
             print(f"Received text message: '{text}' and forwarded as it is.")
 

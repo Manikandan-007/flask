@@ -1,21 +1,19 @@
+# Define the text to be replaced and the replacement text
+text_to_replace = "Hello, world!"
+replacement_text = "Goodbye, world!"
 
-import os
+# Read the content of the file
+with open("example.txt", "r") as file:
+    file_content = file.read()
 
-# Define a list
-my_list = ["value1", "value2", "value3"]
+# Replace the text
+updated_content = file_content.replace(text_to_replace, replacement_text)
 
-# Convert the list into a string with a delimiter (comma in this case)
-list_as_string = ",".join(my_list)
-
-# Set the environment variable with the string representation of the list
-os.environ["MY_LIST"] = list_as_string
+# Write the updated content back to the file
+with open("example.txt", "w") as file:
+    file.write(updated_content)
 
 
-# Get the environment variable
-list_as_string = os.getenv("MY_LIST")
-
-# Convert the string back to a list using the delimiter
-retrieved_list = list_as_string.split(",") if list_as_string else []
-
-# Print the retrieved list
-print(retrieved_list)
+with open("example.txt", "r") as file:
+    file_content = file.read()
+    print(file_content)

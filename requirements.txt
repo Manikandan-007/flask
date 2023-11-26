@@ -3,3 +3,4 @@ telethon
 bs4
 asyncio
 gunicorn
+dotenv

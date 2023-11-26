@@ -1,6 +1,7 @@
+dotenv
 requests
 telethon
 bs4
 asyncio
 gunicorn
-dotenv
+

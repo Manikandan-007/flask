@@ -33,6 +33,7 @@ class discudemy:
         if message in discudemy.completed:
             return False
         else:
+            print('List=',*discudemy.completed,sep='\n')
             return True
 
     @staticmethod

@@ -3,9 +3,6 @@ from dotenv import load_dotenv
 # Load variables from .env file
 load_dotenv()
 
-
-import os
-
 import os
 
 # Define a list
@@ -17,9 +14,6 @@ list_as_string = ",".join(my_list)
 # Set the environment variable with the string representation of the list
 os.environ["MY_LIST"] = list_as_string
 
-
-
-import os
 
 # Get the environment variable
 list_as_string = os.getenv("MY_LIST")

@@ -44,6 +44,7 @@ class discudemy:
                 link = discudemy.firstPagediskUdemy(discLink)
                 if link:
                     discudemy.completed.append(discLink)
+                    print('After Update',discudemy.completed)
                 else:
                     print(discLink,'Expired!')
                 return link

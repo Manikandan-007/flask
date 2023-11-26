@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-import os
+
 import re
 def Find(string):
     regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
@@ -29,8 +29,6 @@ class discudemy:
     @staticmethod
     def checkAvailable(message:str):
         # message =message.split('\n')[3][3:]
-        discudemy.completed = os.getenv("completed")
-        discudemy.completed = completed.split(',') if completed else []
         print(message)
         if message in discudemy.completed:
             return False
@@ -46,8 +44,6 @@ class discudemy:
                 link = discudemy.firstPagediskUdemy(discLink)
                 if link:
                     discudemy.completed.append(discLink)
-                    discudemy.completed = ','.join(discudemy.completed)
-                    os.environ['completed'] = discudemy.completed
                     print('After Update',discudemy.completed)
                 else:
                     print(discLink,'Expired!')

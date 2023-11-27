@@ -56,7 +56,7 @@ class discudemy:
 from telethon.sync import TelegramClient, events
 
 from asyncio import run
-
+#Above is only for colab
 api_id = '26989318'
 api_hash = '062a6050a2c00efbd633b53c434a4f5b'
 session_name = 'my-laptop-script'

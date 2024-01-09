@@ -35,9 +35,12 @@ def makeConnection():
     return sqlite3.connect("securitysurveillance.db")
 
 
-def execute_query(query, connection=makeConnection(), datatuples=()):
-    cursor = connection.cursor()
+def execute_query(query, connection=None, datatuples=()):
+    cursor = None
     try:
+        if connection==None :
+            connection = makeConnection()
+            cursor = connection.cursor()
         cursor.execute(query, datatuples)
         connection.commit()
         connection.close()
@@ -58,6 +61,19 @@ def read_query(query="""Select *from officers;
         return result
     except Exception as readError:
         print(bcolors.redUnderline + f"Error:'{readError}''")
+
+def readWithColoumn(query='Select *from suspects;'):
+    try:
+        connection = makeConnection()
+        connection.row_factory = sqlite3.Row
+        cursor = connection.cursor()
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        rows = [dict(row) for row in rows]
+        connection.close()
+        return rows
+    except Exception as readException:
+        return str(readException)
 
 
 def displayQuery(query="""Select *from officers;
@@ -321,7 +337,48 @@ def getDataBase():
     pass
 
 
-print('Starting')
+from flask_socketio import SocketIO
+
+#GSM
+socketio = SocketIO(app, cors_allowed_origins='*')
+
+nodeMcuConnects = set()
+
+
+
+@socketio.on('connect', namespace='/nodemcu')
+def onNodeMcuConnect():
+    print('nodeMCU Connected')
+    nodeMcuConnects.add(request.sid)
+    infos = readWithColoumn('select * from informtogsm')
+    if infos:
+        for info in infos:
+            socketio.emit('nodemcuget', info, namespace='/nodemcu')
+    execute_query('delete from informtogsm')
+
+
+@socketio.on('disconnect', namespace='/nodemcu')
+def onNodeMcuDisConnect():
+    nodeMcuConnects.remove(request.sid)
+    print('Node Disconnected')
+
+
+@socketio.on('sendtonodemcu')
+def nodemcu(data):
+    print(data)
+    if nodeMcuConnects != set():
+        socketio.emit('nodemcuget', data,namespace='/nodemcu')
+        print('nodemcu')
+    else:
+        query = f'''INSERT INTO informtogsm ( suspectName, contactNumber, location, category)
+VALUES (?, ?, ?, ?);'''
+        execute_query(query=query,datatuples=(data.get('name'), data.get('number'), data.get('location'), data.get('category')))
+        print(query, 'no nodemcu found')
+
+@app.route('/infogsm',methods=['POST'])
+def infoGsm():
+    nodemcu(request.form)
+
+
 if __name__ == '__main__':
     app.run(debug=True)
-print("Ended")

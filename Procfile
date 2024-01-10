@@ -1,3 +1,3 @@
 {
-  web = "gunicorn -k eventlet -w 4 -b 0.0.0.0:5000 main:socketio";
+ gunicorn -w 1 --threads 100 module:app
 }

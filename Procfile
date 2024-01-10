@@ -1,1 +1,2 @@
-web: gunicorn main:socketio
+gunicorn --bind 0.0.0.0:5000 --worker-class eventlet -w 1 main:socketio
+gunicorn --bind 0.0.0.0:5000 --worker-class eventlet -w 1 main:app

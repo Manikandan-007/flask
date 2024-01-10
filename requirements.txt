@@ -1,5 +1,3 @@
-uwsgi 
-gevent
 gunicorn
 eventlet
 Flask==3.0.0

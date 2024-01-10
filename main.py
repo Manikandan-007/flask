@@ -389,5 +389,10 @@ def index():
 #     # socketio.run(app, debug=True)
 #     socketio.run(app, debug=True, host='0.0.0.0', port=5000)
 
+
 if __name__ == '__main__':
-    socketio.run(app, debug=True, host='0.0.0.0', port=5000)
+    # Use the environment variable for the port
+    port = int(os.environ.get('PORT', 5000))
+    
+    # Run the application with Socket.IO support
+    socketio.run(app, host='0.0.0.0', port=port)

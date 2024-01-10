@@ -10,6 +10,9 @@ import datetime
 app = Flask(__name__)
 CORS(app)
 
+from flask_socketio import SocketIO
+socketio = SocketIO(app, cors_allowed_origins='*')
+
 # SQL Operations
 import sqlite3
 import pandas as pd
@@ -243,7 +246,7 @@ def convertTobase64(query):
     return suspects
 
 
-@app.route('/getallsuspect')
+@app.route('/getallsuspect',methods = ['Get'])
 def getAllsuspect():
     try:
         getAllsuspectQuery = "Select * from suspects"
@@ -337,10 +340,8 @@ def getDataBase():
     pass
 
 
-from flask_socketio import SocketIO
 
 #GSM
-socketio = SocketIO(app, cors_allowed_origins='*')
 
 nodeMcuConnects = set()
 
@@ -379,6 +380,9 @@ VALUES (?, ?, ?, ?);'''
 def infoGsm():
     nodemcu(request.form)
 
+@app.route('/',methods=['GET'])
+def index():
+    return jsonify({'Hi':'Hi'})
 
 if __name__ == '__main__':
     # app.run(debug=True)

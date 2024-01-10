@@ -1,1 +1,1 @@
-{ startScript = "gunicorn --bind 0.0.0.0:5000 --worker-class eventlet -w 1 main:socketio"; }
+uwsgi --http :5000 --gevent 1000 --http-websockets --master --wsgi-file main.py --callable app

@@ -1,0 +1,18 @@
+{
+  "services": {
+    "web": {
+      "env": {
+        "FLASK_APP": "main.py",
+        "FLASK_ENV": "production",
+        "RACK_ENV": "production",
+        "PORT": "$PORT"
+      },
+      "commands": [
+        "pip install -r requirements.txt",
+        "flask run --host 0.0.0.0 --port $PORT"
+      ]
+    }
+  },
+  "buildCommand": "pip install -r requirements.txt",
+  "devCommand": "flask run"
+}

@@ -44,7 +44,7 @@ def execute_query(query, connection=None, datatuples=()):
     try:
         if connection==None :
             connection = makeConnection()
-            cursor = connection.cursor()
+        cursor = connection.cursor()
         cursor.execute(query, datatuples)
         connection.commit()
         connection.close()

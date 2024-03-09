@@ -11,7 +11,7 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, join_room, leave_room
 socketio = SocketIO(app, cors_allowed_origins='*')
 
 # SQL Operations
@@ -351,31 +351,85 @@ nodeMcuConnects = set()
 @socketio.on('connect', namespace='/nodemcu')
 def onNodeMcuConnect():
     print('nodeMCU Connected')
-    nodeMcuConnects.add(request.sid)
-    infos = readWithColoumn('select * from informtogsm')
+    print(request.args.get('id', '1'))
+    room = request.args.get('id', 'nodemcu')
+    join_room(room, request.sid, namespace='/nodemcu')
+    nodeMcuConnects.add(room)
+    if room == 'nodemcu':
+        infos = readWithColoumn('select * from informtogsm')
+        if infos:
+            for info in infos:
+                socketio.emit('nodemcuget', info, namespace='/nodemcu')
+        # execute_query('delete from informtogsm')
+    infos = readWithColoumn(f"select * from informtogsm where userId={room}")
+    print(infos)
     if infos:
         for info in infos:
-            socketio.emit('nodemcuget', info, namespace='/nodemcu')
-    execute_query('delete from informtogsm')
+            socketio.emit('nodemcuget', info, namespace='/nodemcu', room= room)
+        execute_query(f'delete from informtogsm where userId = {room}')
 
 
 @socketio.on('disconnect', namespace='/nodemcu')
 def onNodeMcuDisConnect():
-    nodeMcuConnects.remove(request.sid)
+    room = request.args.get('id', 'nodemcu')
+    leave_room(room, request.sid, namespace='/nodemcu')
+    nodeMcuConnects.remove(room)
     print('Node Disconnected')
 
 
 @socketio.on('sendtonodemcu')
 def nodemcu(data):
-    print(data)
-    if nodeMcuConnects != set():
-        socketio.emit('nodemcuget', data,namespace='/nodemcu')
+    print(data, nodeMcuConnects)
+    suspectId = data.get('suspectid', 1)
+    query = f"select userId from suspects where id = {suspectId};"
+    userId = read_query(query, makeConnection())
+    print(suspectId, userId)
+    print(userId, nodeMcuConnects)
+    if 'nodemcu' in nodeMcuConnects:
+        socketio.emit('nodemcuget', data,namespace='/nodemcu', room = 'nodemcu')
+    if userId and str(userId[0][0]) in nodeMcuConnects:
+        socketio.emit('nodemcuget', data,namespace='/nodemcu', room = str(userId[0][0]))
         print('nodemcu')
     else:
+        query = f'''
+    INSERT INTO informtogsm (suspectid, suspectName, contactNumber, location, category, userid)
+    VALUES (?, ?, ?, ?, ?, ?);
+'''
+
+        datatuple = (
+            data.get('suspectid'),
+            data.get('name'),
+            data.get('number'),
+            data.get('location'),
+            data.get('category'),
+            userId[0][0]
+        )
+
+        execute_query(query=query, datatuples=datatuple)
+
+        print(query, 'no nodemcu found')
+
+
+
+@app.route('/send_message', methods=['POST'])
+def sendMessage():
+    if request.form:
+        data = request.form
         query = f'''INSERT INTO informtogsm ( suspectName, contactNumber, location, category)
 VALUES (?, ?, ?, ?);'''
         execute_query(query=query,datatuples=(data.get('name'), data.get('number'), data.get('location'), data.get('category')))
-        print(query, 'no nodemcu found')
+        # print(query, 'no nodemcu found')
+        return jsonify({'status':'success'})
+    return jsonify({'status':'fail'})
+    
+
+@app.route('/get_message', methods=['GET'])
+def getMessage():
+    print('nodeMCU Connected')
+    infos = readWithColoumn('select * from informtogsm')
+    execute_query('delete from informtogsm')
+    return infos
+
 
 @app.route('/infogsm',methods=['POST'])
 def infoGsm():
@@ -397,4 +451,4 @@ if __name__ == '__main__':
     #port = 5000
     print(port) 
     # Run the application with Socket.IO support
-    socketio.run(app, host='0.0.0.0', port=port)
+    socketio.run(app, host='0.0.0.0', port=port, debug=True)

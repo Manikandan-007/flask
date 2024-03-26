@@ -2,10 +2,10 @@ FROM python
 
 WORKDIR /app
 
-COPY /flask/requirements.txt .
+COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY /flask/ .
+COPY . .
 
 ENTRYPOINT ["python","main.py"]
